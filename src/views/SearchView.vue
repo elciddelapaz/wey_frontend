@@ -1,18 +1,36 @@
 <script setup>
 import PeopleYouMayKnow from "@/components/PeopleYouMayKnow.vue";
 import Trends from "@/components/Trends.vue";
+import axios from "axios";
+import { ref } from "vue";
+import { RouterLink } from "vue-router";
+
+const query = ref();
+const users = ref([]);
+const posts = ref([]);
+const submit = () => {
+  axios
+    .post("/api/search/", { query: query.value })
+    .then((res) => {
+      users.value = res.data.users;
+      posts.value = res.data.posts;
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+};
 </script>
 <template>
   <div class="max-w-7xl mx-auto grid grid-cols-4 gap-4">
     <div class="main-left col-span-3 space-y-4">
       <div class="bg-white border border-gray-200 rounded-lg">
-        <form class="p-4 flex space-x-4">
+        <form class="p-4 flex space-x-4" @submit.prevent="submit">
           <input
+            v-model="query"
             type="search"
             class="p-4 w-full bg-gray-100 rounded-lg"
             placeholder="What are you looking for?"
           />
-
           <button
             class="inline-block py-4 px-6 bg-purple-600 text-white rounded-lg"
           >
@@ -36,70 +54,23 @@ import Trends from "@/components/Trends.vue";
 
       <div
         class="p-4 bg-white border border-gray-200 rounded-lg grid grid-cols-4 gap-4"
+        v-if="users.length"
       >
-        <div class="p-4 text-center bg-gray-100 rounded-lg">
+        <div
+          class="p-4 text-center bg-gray-100 rounded-lg"
+          v-for="user in users"
+          :key="user.id"
+        >
           <img
             src="https://i.pravatar.cc/300?img=70"
             class="mb-6 rounded-full"
           />
           <p>
-            <strong>Code with stein</strong>
-          </p>
-
-          <div class="mt-6 flex space-x-8 justify-around">
-            <p class="text-xs text-gray-500">69 friends</p>
-            <p class="text-xs text-gray-500">69 posts</p>
-          </div>
-        </div>
-        <div class="p-4 text-center bg-gray-100 rounded-lg">
-          <img
-            src="https://i.pravatar.cc/300?img=70"
-            class="mb-6 rounded-full"
-          />
-          <p>
-            <strong>Code with stein</strong>
-          </p>
-
-          <div class="mt-6 flex space-x-8 justify-around">
-            <p class="text-xs text-gray-500">69 friends</p>
-            <p class="text-xs text-gray-500">69 posts</p>
-          </div>
-        </div>
-        <div class="p-4 text-center bg-gray-100 rounded-lg">
-          <img
-            src="https://i.pravatar.cc/300?img=70"
-            class="mb-6 rounded-full"
-          />
-          <p>
-            <strong>Code with stein</strong>
-          </p>
-
-          <div class="mt-6 flex space-x-8 justify-around">
-            <p class="text-xs text-gray-500">69 friends</p>
-            <p class="text-xs text-gray-500">69 posts</p>
-          </div>
-        </div>
-        <div class="p-4 text-center bg-gray-100 rounded-lg">
-          <img
-            src="https://i.pravatar.cc/300?img=70"
-            class="mb-6 rounded-full"
-          />
-          <p>
-            <strong>Code with stein</strong>
-          </p>
-
-          <div class="mt-6 flex space-x-8 justify-around">
-            <p class="text-xs text-gray-500">69 friends</p>
-            <p class="text-xs text-gray-500">69 posts</p>
-          </div>
-        </div>
-        <div class="p-4 text-center bg-gray-100 rounded-lg">
-          <img
-            src="https://i.pravatar.cc/300?img=70"
-            class="mb-6 rounded-full"
-          />
-          <p>
-            <strong>Code with stein</strong>
+            <strong>
+              <RouterLink :to="{ name: 'profile', params: { id: user.id } }">
+                {{ user.name }}
+              </RouterLink>
+            </strong>
           </p>
 
           <div class="mt-6 flex space-x-8 justify-around">
@@ -108,19 +79,30 @@ import Trends from "@/components/Trends.vue";
           </div>
         </div>
       </div>
-
-      <div class="p-4 bg-white border border-gray-200 rounded-lg">
+      <div
+        class="p-4 bg-white border border-gray-200 rounded-lg"
+        v-for="post in posts"
+        :key="post.id"
+      >
         <div class="mb-6 flex items-center justify-between">
           <div class="flex items-center space-x-6">
             <img
               src="https://i.pravatar.cc/300?img=70"
               class="w-[40px] rounded-full"
             />
-            <p><strong>Code With Stein</strong></p>
+            <p>
+              <strong>
+                <RouterLink
+                  :to="{ name: 'profile', params: { id: post.created_by.id } }"
+                >
+                  {{ post.created_by.name }}
+                </RouterLink>
+              </strong>
+            </p>
           </div>
-          <p class="text-gray-600">18 minutes ago</p>
+          <p class="text-gray-600">{{ post.created_at_formatted }} ago</p>
         </div>
-        <p>Lorem ipsum bla bla</p>
+        <p>{{ post.body }}</p>
         <div class="my-6 flex justify-between">
           <div class="flex space-x-6 items-center">
             <div class="flex items-center space-x-2">
