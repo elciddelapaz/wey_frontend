@@ -3,7 +3,7 @@ import { RouterLink, useRoute } from "vue-router";
 import axios from "axios";
 import PeopleYouMayKnow from "@/components/PeopleYouMayKnow.vue";
 import Trends from "@/components/Trends.vue";
-import { onMounted, onUpdated, reactive, ref } from "vue";
+import { onMounted, reactive, ref, watch } from "vue";
 import { useUserStore } from "@/stores/user";
 import FeedItem from "../components/FeedItem.vue";
 const route = useRoute();
@@ -11,15 +11,22 @@ const userStore = useUserStore();
 const posts = reactive([]);
 const form = reactive({ body: "" });
 const user = ref({});
-onMounted(async () => {
-  await axios.get(`/api/posts/profile/${route.params.id}`).then((res) => {
+onMounted(() => {
+  getData();
+});
+watch(
+  () => route.params.id,
+  () => {
+    getData();
+  },
+  { deep: true }
+);
+const getData = () => {
+  axios.get(`/api/posts/profile/${route.params.id}`).then((res) => {
     posts.data = res.data.posts;
     user.value = res.data.user;
   });
-});
-// onUpdated(() => {
-
-// })
+};
 const submit = () => {
   axios
     .post("/api/posts/create/", form)
