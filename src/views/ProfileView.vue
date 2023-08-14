@@ -1,5 +1,5 @@
 <script setup>
-import { RouterLink, useRoute } from 'vue-router'
+import { RouterLink, useRoute, useRouter } from 'vue-router'
 import axios from 'axios'
 import PeopleYouMayKnow from '@/components/PeopleYouMayKnow.vue'
 import Trends from '@/components/Trends.vue'
@@ -10,6 +10,7 @@ import { useToastStore } from '@/stores/toast'
 
 const toastStore = useToastStore()
 const route = useRoute()
+const router = useRouter()
 const userStore = useUserStore()
 const posts = ref([])
 const form = ref({ body: '' })
@@ -56,6 +57,10 @@ const sendFriendRequest = () => {
             console.log(err)
         })
 }
+const logout = () => {
+    userStore.removeToken()
+    router.push('/login')
+}
 </script>
 <template>
     <div class="max-w-7xl mx-auto grid grid-cols-4 gap-4">
@@ -72,8 +77,9 @@ const sendFriendRequest = () => {
 
                     <p class="text-xs text-gray-500">120 posts</p>
                 </div>
-                <div class="mt-6" v-if="$route.params.id">
-                    <button href="#" class="inline-block py-4 px-3 bg-purple-600 text-white rounded-lg text-xs" @click="sendFriendRequest">Send Friend Request</button>
+                <div class="mt-6">
+                    <button v-if="userStore.user.id !== user.id" href="#" class="inline-block py-4 px-3 bg-purple-600 text-white rounded-lg text-xs" @click="sendFriendRequest">Send Friend Request</button>
+                    <button v-if="userStore.user.id === user.id" href="#" class="inline-block py-4 px-3 bg-red-600 text-white rounded-lg text-xs" @click="logout">Logout</button>
                 </div>
             </div>
         </div>
