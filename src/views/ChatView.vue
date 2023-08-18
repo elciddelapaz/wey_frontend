@@ -12,7 +12,7 @@ onMounted(() => {
     .then((res) => {
       conversations.value = res.data
       if (conversations.value.length) {
-        activeConversation.value = conversations.value[0]
+        activeConversation.value = conversations.value[0].id
         getMessages(activeConversation.value.id)
       }
     })
@@ -20,9 +20,8 @@ onMounted(() => {
 })
 const getMessages = () => {
   axios
-    .get(`/api/chat/${activeConversation.value.id}/`)
+    .get(`/api/chat/${activeConversation.value}/`)
     .then((res) => {
-      console.log(res.data)
       activeConversation.value = res.data
     })
     .catch((err) => console.log(err))
@@ -31,10 +30,13 @@ const send = () => {
   axios
     .post(`/api/chat/${activeConversation.value.id}/send/`, { body: body.value })
     .then((res) => {
-      // console.log(activeConversation.value.messages)
       activeConversation.value['messages'].push(res.data)
     })
     .catch((err) => console.log(err))
+}
+const setActiveConversation = (id) => {
+  activeConversation.value = id
+  getMessages()
 }
 </script>
 
@@ -43,7 +45,7 @@ const send = () => {
     <div class="main-left col-span-1">
       <div class="p-4 bg-white border border-gray-200 rounded-lg">
         <div class="space-y-4">
-          <div class="flex items-center justify-between" v-for="conversation in conversations" :key="conversation.id">
+          <div class="flex items-center justify-between" v-for="conversation in conversations" :key="conversation.id" @click="setActiveConversation(conversation.id)">
             <div class="flex items-center space-x-2">
               <img src="https://i.pravatar.cc/300?img=70" class="w-[40px] rounded-full" />
               <template v-for="user in conversation.users" :key="user.id">
@@ -58,29 +60,30 @@ const send = () => {
     <div class="main-center col-span-3 space-y-4">
       <div class="bg-white border border-gray-200 rounded-lg">
         <div class="flex flex-col flex-grow p-4">
-          <div class="flex w-full mt-2 space-x-3 max-w-md ml-auto justify-end" v-for="message in activeConversation.messages" :key="message.id">
-            <div>
-              <div class="bg-blue-600 text-white p-3 rounded-l-lg rounded-br-lg">
-                <p class="text-sm">{{ message.body }}</p>
+          <template v-for="message in activeConversation.messages" :key="message.id">
+            <div class="flex w-full mt-2 space-x-3 max-w-md ml-auto justify-end" v-if="message.created_by.id == userStore.user.id">
+              <div>
+                <div class="bg-blue-600 text-white p-3 rounded-l-lg rounded-br-lg">
+                  <p class="text-sm">{{ message.body }}</p>
+                </div>
+                <span class="text-xs text-gray-500 leading-none">{{ message.created_at_formatted }} ago</span>
               </div>
-              <span class="text-xs text-gray-500 leading-none">{{ message.created_at_formatted }} ago</span>
-            </div>
-            <div class="flex-shrink-0 h-10 w-10 rounded-full bg-gray-300">
-              <img src="https://i.pravatar.cc/300?img=70" class="w-[40px] rounded-full" />
-            </div>
-          </div>
-
-          <div class="flex w-full mt-2 space-x-3 max-w-md">
-            <div class="flex-shrink-0 h-10 w-10 rounded-full bg-gray-300">
-              <img src="https://i.pravatar.cc/300?img=70" class="w-[40px] rounded-full" />
-            </div>
-            <div>
-              <div class="bg-gray-300 p-3 rounded-r-lg rounded-bl-lg">
-                <p class="text-sm">Lorem ipsum dolor sit amet.</p>
+              <div class="flex-shrink-0 h-10 w-10 rounded-full bg-gray-300">
+                <img src="https://i.pravatar.cc/300?img=70" class="w-[40px] rounded-full" />
               </div>
-              <span class="text-xs text-gray-500 leading-none">18 mins ago</span>
             </div>
-          </div>
+            <div class="flex w-full mt-2 space-x-3 max-w-md" v-else>
+              <div class="flex-shrink-0 h-10 w-10 rounded-full bg-gray-300">
+                <img src="https://i.pravatar.cc/300?img=70" class="w-[40px] rounded-full" />
+              </div>
+              <div>
+                <div class="bg-gray-300 p-3 rounded-r-lg rounded-bl-lg">
+                  <p class="text-sm">{{ message.body }}</p>
+                </div>
+                <span class="text-xs text-gray-500 leading-none">18 mins ago</span>
+              </div>
+            </div>
+          </template>
         </div>
       </div>
 
