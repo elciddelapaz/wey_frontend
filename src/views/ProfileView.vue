@@ -85,7 +85,7 @@ const logout = () => {
             <p class="text-xs text-gray-500">{{ user.friends_count }} friends</p>
           </RouterLink>
 
-          <p class="text-xs text-gray-500">120 posts</p>
+          <p class="text-xs text-gray-500">{{ user.posts_count }} posts</p>
         </div>
         <div class="mt-6 grid gap-2">
           <button v-if="userStore.user.id !== user.id" href="#" class="py-4 px-3 bg-purple-600 text-white rounded-lg text-xs" @click="sendFriendRequest">Send Friend Request</button>
