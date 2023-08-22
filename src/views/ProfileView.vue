@@ -36,7 +36,7 @@ const submit = () => {
     .post('/api/posts/create/', form.value)
     .then((res) => {
       posts.value.unshift(res.data)
-      form.body = ''
+      form.value.body = ''
     })
     .catch((err) => {
       console.log(err)
