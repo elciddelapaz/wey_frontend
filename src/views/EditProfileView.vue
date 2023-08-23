@@ -33,6 +33,7 @@ const submit = () => {
             id: userStore.user.id,
             name: form.name,
             email: form.email,
+            avatar: res.data.user.get_avatar,
           })
           router.back()
         } else {
