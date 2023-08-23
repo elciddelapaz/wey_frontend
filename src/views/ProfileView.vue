@@ -37,6 +37,7 @@ const submit = () => {
     .then((res) => {
       posts.value.unshift(res.data)
       form.value.body = ''
+      user.value.posts_count += 1
     })
     .catch((err) => {
       console.log(err)
