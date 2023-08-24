@@ -27,7 +27,7 @@ const submit = () => {
       .then((res) => {
         console.log(res)
         if (res.data.message === 'success') {
-          toastStore.showToast(5000, 'The user is registered. Please log in', 'bg-emerald-500')
+          toastStore.showToast(5000, 'The user is registered. Please activate it before logging in', 'bg-emerald-500')
           form.email = ''
           form.name = ''
           form.password1 = ''

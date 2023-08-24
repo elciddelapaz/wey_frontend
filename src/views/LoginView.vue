@@ -21,9 +21,10 @@ const submit = async () => {
       .then((response) => {
         userStore.setToken(response.data)
         axios.defaults.headers.common['Authorization'] = 'Bearer ' + response.data.access
+        router.push('/feed')
       })
       .catch((error) => {
-        errors.push('The email or password is incorrect!')
+        errors.push('The email or password is incorrect! Or the user is not yet activated')
       })
   }
 
