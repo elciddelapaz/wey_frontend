@@ -15,6 +15,8 @@ const userStore = useUserStore()
 const posts = ref([])
 const form = ref({ body: '' })
 const user = ref({})
+const file = ref(null)
+const url = ref(null)
 onMounted(() => {
   getData()
 })
@@ -32,11 +34,15 @@ const getData = () => {
   })
 }
 const submit = () => {
+  let formData = new FormData()
+  formData.append('image', file.value.files[0])
+  formData.append('body', form.value.body)
   axios
-    .post('/api/posts/create/', form.value)
+    .post('/api/posts/create/', formData, { headers: { 'Content-Type': 'multipart/form-data' } })
     .then((res) => {
       posts.value.unshift(res.data)
       form.value.body = ''
+      url.value = ''
       user.value.posts_count += 1
     })
     .catch((err) => {
@@ -68,6 +74,10 @@ const sendDirectMessage = () => {
       console.log(err)
     })
 }
+const onFileChange = (e) => {
+  const selectedImage = e.target.files[0]
+  url.value = URL.createObjectURL(selectedImage)
+}
 const logout = () => {
   userStore.removeToken()
   router.push('/login')
@@ -77,7 +87,9 @@ const logout = () => {
   <div class="max-w-7xl mx-auto grid grid-cols-4 gap-4">
     <div class="main-left col-span-1">
       <div class="p-4 bg-white border border-gray-200 text-center rounded-lg">
-        <img :src="user.get_avatar" class="mb-6 rounded-full" />
+        <div class="flex items-center justify-center">
+          <img :src="user.get_avatar" class="mb-6 rounded-full" />
+        </div>
         <p>
           <strong>{{ user.name }}</strong>
         </p>
@@ -85,7 +97,6 @@ const logout = () => {
           <RouterLink :to="{ name: 'friends', params: { id: user.id } }">
             <p class="text-xs text-gray-500">{{ user.friends_count }} friends</p>
           </RouterLink>
-
           <p class="text-xs text-gray-500">{{ user.posts_count }} posts</p>
         </div>
         <div class="mt-6 grid gap-2">
@@ -101,9 +112,15 @@ const logout = () => {
         <form method="post" @submit.prevent="submit">
           <div class="p-4">
             <textarea v-model="form.body" class="p-4 w-full bg-gray-100 rounded-lg" placeholder="What are you thinking about?" />
+            <div id="preview" v-if="url">
+              <img :src="url" class="w-[100px] mt-3 rounded-xl" />
+            </div>
           </div>
           <div class="p-4 border-t border-gray-100 flex justify-between">
-            <button href="#" class="inline-block py-4 px-6 bg-gray-600 text-white rounded-lg">Attach image</button>
+            <label class="inline-block py-4 px-6 bg-gray-600 text-white rounded-lg">
+              <input type="file" ref="file" @change="onFileChange" />
+              Attach image
+            </label>
             <button href="#" class="inline-block py-4 px-6 bg-purple-600 text-white rounded-lg">Post</button>
           </div>
         </form>
@@ -120,3 +137,15 @@ const logout = () => {
     </div>
   </div>
 </template>
+<style scoped>
+input[type='file'] {
+  display: none;
+}
+
+.custom-file-upload {
+  border: 1px solid #ccc;
+  display: inline-block;
+  padding: 6px 12px;
+  cursor: pointer;
+}
+</style>
