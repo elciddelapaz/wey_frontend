@@ -53,7 +53,6 @@ const sendFriendRequest = () => {
   axios
     .post(`/api/friends/${route.params.id}/request/`)
     .then((res) => {
-      user.value = res.data.user
       if (res.data.message === 'request already sent') {
         toastStore.showToast(5000, 'The request has already been sent!', 'bg-red-300')
       } else {
