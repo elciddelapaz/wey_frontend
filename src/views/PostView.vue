@@ -12,7 +12,6 @@ const form = reactive({ body: '' })
 onMounted(() => {
   axios.get(`/api/posts/${route.params.id}/`).then((res) => {
     post.value = res.data.post
-    console.log(res.data)
   })
 })
 
