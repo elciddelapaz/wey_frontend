@@ -18,7 +18,6 @@ onMounted(() => {
 })
 const getData = () => {
   axios.get(`/api/friends/${route.params.id}/`).then((res) => {
-    console.log(res.data)
     friendRequests.value = res.data.request
     friends.value = res.data.friends
     user.value = res.data.user
