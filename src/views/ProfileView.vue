@@ -15,6 +15,7 @@ const userStore = useUserStore()
 const posts = ref([])
 const form = ref({ body: '' })
 const user = ref({})
+const can_send_friend_request = ref(null)
 const file = ref(null)
 const url = ref(null)
 onMounted(() => {
@@ -31,6 +32,7 @@ const getData = () => {
   axios.get(`/api/posts/profile/${route.params.id}`).then((res) => {
     posts.value = res.data.posts
     user.value = res.data.user
+    can_send_friend_request.value = res.data.can_send_friend_request
   })
 }
 const submit = () => {
@@ -99,7 +101,7 @@ const logout = () => {
           <p class="text-xs text-gray-500">{{ user.posts_count }} posts</p>
         </div>
         <div class="mt-6 grid gap-2">
-          <button v-if="userStore.user.id !== user.id" href="#" class="py-4 px-3 bg-purple-600 text-white rounded-lg text-xs" @click="sendFriendRequest">Send Friend Request</button>
+          <button v-if="userStore.user.id !== user.id && can_send_friend_request" href="#" class="py-4 px-3 bg-purple-600 text-white rounded-lg text-xs" @click="sendFriendRequest">Send Friend Request</button>
           <button v-if="userStore.user.id !== user.id" href="#" class="py-4 px-3 bg-purple-600 text-white rounded-lg text-xs" @click="sendDirectMessage">Send Direct Message</button>
           <RouterLink v-if="userStore.user.id === user.id" :to="{ name: 'profileedit' }" class="py-4 px-3 bg-purple-600 text-white rounded-lg text-xs">Edit Profile</RouterLink>
           <button v-if="userStore.user.id === user.id" href="#" class="py-4 px-3 bg-red-600 text-white rounded-lg text-xs" @click="logout">Logout</button>
