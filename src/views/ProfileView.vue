@@ -12,6 +12,7 @@ const toastStore = useToastStore()
 const route = useRoute()
 const router = useRouter()
 const userStore = useUserStore()
+const is_private = ref(false)
 const posts = ref([])
 const form = ref({ body: '' })
 const user = ref({})
@@ -39,12 +40,14 @@ const submit = () => {
   let formData = new FormData()
   formData.append('image', file.value.files[0])
   formData.append('body', form.value.body)
+  formData.append('is_private', is_private.value)
   axios
     .post('/api/posts/create/', formData, { headers: { 'Content-Type': 'multipart/form-data' } })
     .then((res) => {
       posts.value.unshift(res.data)
       form.value.body = ''
       url.value = ''
+      is_private.value = false
       user.value.posts_count += 1
     })
     .catch((err) => {
@@ -113,6 +116,10 @@ const logout = () => {
         <form method="post" @submit.prevent="submit">
           <div class="p-4">
             <textarea v-model="form.body" class="p-4 w-full bg-gray-100 rounded-lg" placeholder="What are you thinking about?" />
+            <label>
+              <input type="checkbox" v-model="is_private" />
+              Private
+            </label>
             <div id="preview" v-if="url">
               <img :src="url" class="w-[100px] mt-3 rounded-xl" />
             </div>
