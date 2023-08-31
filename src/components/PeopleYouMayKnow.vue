@@ -25,7 +25,7 @@ onMounted(() => {
             <strong>{{ user.name }}</strong>
           </p>
         </div>
-        <RouterLink :to="{ name: 'profile', params: { id: user.id } }" class="py-2 px-3 bg-purple-600 text-white text-xs rounded-lg">Show</RouterLink>
+        <RouterLink :to="{ name: 'profile', params: { id: user.id } }" class="py-2 px-3 bg-purple-600 text-white text-xs rounded-lg">View Profile</RouterLink>
       </div>
     </div>
   </div>
