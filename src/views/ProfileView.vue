@@ -7,18 +7,15 @@ import { onMounted, reactive, ref, watch } from 'vue'
 import { useUserStore } from '@/stores/user'
 import FeedItem from '../components/FeedItem.vue'
 import { useToastStore } from '@/stores/toast'
+import FeedForm from '../components/FeedForm.vue'
 
 const toastStore = useToastStore()
 const route = useRoute()
 const router = useRouter()
 const userStore = useUserStore()
-const is_private = ref(false)
 const posts = ref([])
-const form = ref({ body: '' })
 const user = ref({})
 const can_send_friend_request = ref(null)
-const file = ref(null)
-const url = ref(null)
 onMounted(() => {
   getData()
 })
@@ -36,24 +33,7 @@ const getData = () => {
     can_send_friend_request.value = res.data.can_send_friend_request
   })
 }
-const submit = () => {
-  let formData = new FormData()
-  formData.append('image', file.value.files[0])
-  formData.append('body', form.value.body)
-  formData.append('is_private', is_private.value)
-  axios
-    .post('/api/posts/create/', formData, { headers: { 'Content-Type': 'multipart/form-data' } })
-    .then((res) => {
-      posts.value.unshift(res.data)
-      form.value.body = ''
-      url.value = ''
-      is_private.value = false
-      user.value.posts_count += 1
-    })
-    .catch((err) => {
-      console.log(err)
-    })
-}
+
 const sendFriendRequest = () => {
   axios
     .post(`/api/friends/${route.params.id}/request/`)
@@ -113,25 +93,7 @@ const logout = () => {
     </div>
     <div class="main-center col-span-2 space-y-4">
       <div class="p-4 bg-white border border-gray-200 rounded-lg" v-if="userStore.user.id === user.id">
-        <form method="post" @submit.prevent="submit">
-          <div class="p-4">
-            <textarea v-model="form.body" class="p-4 w-full bg-gray-100 rounded-lg" placeholder="What are you thinking about?" />
-            <label>
-              <input type="checkbox" v-model="is_private" />
-              Private
-            </label>
-            <div id="preview" v-if="url">
-              <img :src="url" class="w-[100px] mt-3 rounded-xl" />
-            </div>
-          </div>
-          <div class="p-4 border-t border-gray-100 flex justify-between">
-            <label class="inline-block py-4 px-6 bg-gray-600 text-white rounded-lg">
-              <input type="file" ref="file" @change="onFileChange" />
-              Attach image
-            </label>
-            <button href="#" class="inline-block py-4 px-6 bg-purple-600 text-white rounded-lg">Post</button>
-          </div>
-        </form>
+        <FeedForm :user="user" :posts="posts" />
       </div>
       <div class="p-4 bg-white border border-gray-200 rounded-lg" v-for="post in posts" :key="post.id">
         <FeedItem :post="post" />
@@ -140,20 +102,7 @@ const logout = () => {
 
     <div class="main-right col-span-1 space-y-4">
       <PeopleYouMayKnow />
-
       <Trends />
     </div>
   </div>
 </template>
-<style scoped>
-input[type='file'] {
-  display: none;
-}
-
-.custom-file-upload {
-  border: 1px solid #ccc;
-  display: inline-block;
-  padding: 6px 12px;
-  cursor: pointer;
-}
-</style>
