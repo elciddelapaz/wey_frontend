@@ -26,6 +26,10 @@ const submit = () => {
       console.log(err)
     })
 }
+const onFileChange = (e) => {
+  const selectedImage = e.target.files[0]
+  url.value = URL.createObjectURL(selectedImage)
+}
 </script>
 <template>
   <form method="post" @submit.prevent="submit">

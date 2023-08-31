@@ -58,9 +58,9 @@ const sendDirectMessage = () => {
       console.log(err)
     })
 }
-const onFileChange = (e) => {
-  const selectedImage = e.target.files[0]
-  url.value = URL.createObjectURL(selectedImage)
+
+const deletePost = (id) => {
+  posts.value = posts.value.filter((post) => post.id !== id)
 }
 const logout = () => {
   userStore.removeToken()
@@ -96,12 +96,12 @@ const logout = () => {
         <FeedForm :user="user" :posts="posts" />
       </div>
       <div class="p-4 bg-white border border-gray-200 rounded-lg" v-for="post in posts" :key="post.id">
-        <FeedItem :post="post" />
+        <FeedItem :post="post" @delete="deletePost" />
       </div>
     </div>
 
     <div class="main-right col-span-1 space-y-4">
-      <PeopleYouMayKnow />
+      <PeopleYouMayKnow v-if="route.params.id === userStore.user.id" />
       <Trends />
     </div>
   </div>

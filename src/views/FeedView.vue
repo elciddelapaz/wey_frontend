@@ -14,6 +14,9 @@ const getData = () => {
     posts.data = res.data
   })
 }
+const deletePost = (id) => {
+  posts.data = posts.data.filter((post) => post.id !== id)
+}
 </script>
 <template>
   <div class="max-w-7xl mx-auto grid grid-cols-4 gap-4">
@@ -22,7 +25,7 @@ const getData = () => {
         <FeedForm :posts="posts" />
       </div>
       <div class="p-4 bg-white border border-gray-200 rounded-lg" v-for="post in posts.data" :key="post.id">
-        <FeedItem :post="post" />
+        <FeedItem :post="post" @delete="deletePost" />
       </div>
     </div>
 
