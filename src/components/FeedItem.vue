@@ -3,7 +3,9 @@ import { RouterLink } from 'vue-router'
 import axios from 'axios'
 import { ref } from 'vue'
 import { useUserStore } from '@/stores/user'
+import { useToastStore } from '@/stores/toast'
 const userStore = useUserStore()
+const toast = useToastStore()
 const props = defineProps({ post: Object })
 const emit = defineEmits(['delete'])
 const show = ref(false)
@@ -25,10 +27,19 @@ const deletePost = () => {
 
   axios
     .delete(`api/posts/${props.post.id}/delete/`)
-    .then((res) => res.data)
+    .then(() => {
+      toast.showToast(5000, 'The post was deleted', 'bg-emerald-500')
+    })
     .catch((err) => console.log(err))
 }
-const report = () => {}
+const report = () => {
+  axios
+    .post(`api/posts/${props.post.id}/report/`)
+    .then(() => {
+      toast.showToast(5000, 'The post was reported', 'bg-emerald-500')
+    })
+    .catch((err) => console.log(err))
+}
 </script>
 <template>
   <div class="mb-6 flex items-center justify-between">
